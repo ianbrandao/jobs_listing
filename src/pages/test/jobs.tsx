@@ -264,7 +264,7 @@ export const getServerSideProps: GetServerSideProps<JobsProps> = async () => {
 
   try {
     const response = await axios.post(
-      process.env.NEXT_PUBLIC_URL + "/api/jobs",
+      "https://jobs-listing-psi.vercel.app/api/jobs",
       payload
     );
     const jobs = response.data.jobs;
