@@ -1,8 +1,18 @@
+/* Importing the necessary packages for the project. */
 import { useState } from "react";
 import axios from "axios";
 import { GetServerSideProps } from "next";
 import styled from "styled-components";
 
+/**
+ * Job is an object with a number, string, string, string, string, and string.
+ * @property {number} jobId - number;
+ * @property {string} jobTitle - The title of the job
+ * @property {string} companyName - The name of the company that posted the job
+ * @property {string} jobDescription - string;
+ * @property {string} postingDate - "2019-04-01T00:00:00"
+ * @property {string} OBJurl - This is the url to the job posting.
+ */
 type Job = {
   jobId: number;
   jobTitle: string;
@@ -12,10 +22,27 @@ type Job = {
   OBJurl: string;
 };
 
+/**
+ * JobsProps is an object with a jobs property that is an array of Job objects.
+ * @property {Job[]} jobs - Job[] - this is an array of Job objects.
+ */
 type JobsProps = {
   jobs: Job[];
 };
 
+/**
+ * JobsApiPayload is an object with optional properties companySkills, dismissedListingHashes,
+ * fetchJobDesc, jobTitle, locations, numJobs, and previousListingHashes.
+ * @property {boolean} companySkills - boolean
+ * @property {string[]} dismissedListingHashes - An array of listing hashes that the user has
+ * dismissed.
+ * @property {boolean} fetchJobDesc - boolean - Whether or not to fetch the job description.
+ * @property {string} jobTitle - The title of the job you're looking for.
+ * @property {string[]} locations - An array of strings that represent the locations you want to search
+ * for jobs in.
+ * @property {number} numJobs - The number of jobs to return.
+ * @property {string[]} previousListingHashes - An array of hashes of jobs that you've already seen.
+ */
 type JobsApiPayload = {
   companySkills?: boolean;
   dismissedListingHashes?: string[];
@@ -26,6 +53,7 @@ type JobsApiPayload = {
   previousListingHashes?: string[];
 };
 
+/* A styled component. */
 const Container = styled.div`
   margin: 0 auto;
   padding: 20px;
@@ -184,10 +212,25 @@ const JobDescription = styled.p`
   }
 `;
 
+/**
+ * The function takes in an array of jobs, and returns a list of job cards. 
+ * 
+ * The job cards are clickable, and when clicked, open a new tab with the job's link. 
+ * 
+ * The function also has a few buttons that allow the user to filter the jobs by recent, sort the jobs
+ * by company, and reset the filters. 
+ * 
+ * The function is written in TypeScript, and uses React Hooks. 
+ */
 const Jobs = ({ jobs }: JobsProps) => {
+  /* This is a React Hook. It's a way to manage state in React. */
   const [filteredJobs, setFilteredJobs] = useState<Job[]>(jobs.slice(0, 10));
   const [sortedByCompany, setSortedByCompany] = useState(false);
 
+  /**
+   * If the difference between the current date and the job posting date is less than or equal to 7
+   * days, then return the job.
+   */
   const handleFilterByRecent = () => {
     const filtered = jobs.filter((job) => {
       const today = new Date();
@@ -201,6 +244,11 @@ const Jobs = ({ jobs }: JobsProps) => {
     setSortedByCompany(false);
   };
 
+  /**
+   * If the jobs are not sorted by company, then sort the jobs by company and set the sortedByCompany
+   * state to true. If the jobs are sorted by company, then set the filteredJobs state to the original
+   * jobs array and set the sortedByCompany state to false.
+   */
   const handleSortByCompany = () => {
     if (!sortedByCompany) {
       const sorted = jobs
@@ -214,15 +262,24 @@ const Jobs = ({ jobs }: JobsProps) => {
     }
   };
 
+  /**
+   * When the user clicks the reset button, the filtered jobs are set to the first 10 jobs in the jobs
+   * array, and the sortedByCompany state is set to false.
+   */
   const handleResetFilters = () => {
     setFilteredJobs(jobs.slice(0, 10));
     setSortedByCompany(false);
   };
 
+  /**
+   * It opens a new tab in the browser.
+   * @param {string} link - string - The link to open
+   */
   const openLink = (link: string) => {
     window.open(link, '_blank');
   };
 
+  /* It's returning a React component. */
   return (
     <Container>
       <Title>Jobs Listing</Title>
@@ -251,7 +308,12 @@ const Jobs = ({ jobs }: JobsProps) => {
   );
 };
 
+/**
+ * It's a function that returns a function that returns an object
+ * @returns The return value is a promise that resolves to an object with a props property.
+ */
 export const getServerSideProps: GetServerSideProps<JobsProps> = async () => {
+  /* It's creating a payload object that will be sent to the API. */
   const payload: JobsApiPayload = {
     companySkills: true,
     dismissedListingHashes: [],
@@ -262,6 +324,8 @@ export const getServerSideProps: GetServerSideProps<JobsProps> = async () => {
     previousListingHashes: [],
   };
 
+  /* It's making a POST request to the API, and if the request is successful, it returns an object with
+  a jobs property. If the request is unsuccessful, it returns an object with an empty jobs array. */
   try {
     const response = await axios.post(
       "https://jobs-listing-five.vercel.app/api/jobs",
