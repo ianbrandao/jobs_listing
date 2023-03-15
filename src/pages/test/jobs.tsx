@@ -315,8 +315,6 @@ const Jobs = ({ jobs }: JobsProps) => {
 export const getServerSideProps: GetServerSideProps<JobsProps> = async () => {
   const url = process.env.NEXT_PUBLIC_VERCEL_URL!;
 
-  console.log(url);
-
   /* It's creating a payload object that will be sent to the API. */
   const payload: JobsApiPayload = {
     companySkills: true,
