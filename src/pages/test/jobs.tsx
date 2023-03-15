@@ -313,6 +313,10 @@ const Jobs = ({ jobs }: JobsProps) => {
  * @returns The return value is a promise that resolves to an object with a props property.
  */
 export const getServerSideProps: GetServerSideProps<JobsProps> = async () => {
+  const url = process.env.NEXT_PUBLIC_VERCEL_URL!;
+
+  console.log(url);
+
   /* It's creating a payload object that will be sent to the API. */
   const payload: JobsApiPayload = {
     companySkills: true,
@@ -324,13 +328,10 @@ export const getServerSideProps: GetServerSideProps<JobsProps> = async () => {
     previousListingHashes: [],
   };
 
-  /* It's making a POST request to the API, and if the request is successful, it returns an object with
-  a jobs property. If the request is unsuccessful, it returns an object with an empty jobs array. */
   try {
-    const response = await axios.post(
-      "https://jobs-listing-five.vercel.app/api/jobs",
-      payload
-    );
+    /* It's making a POST request to the API, and if the request is successful, it returns an object with
+    a jobs property. If the request is unsuccessful, it throws an error. */
+    const response = await axios.post(url, payload);
     const jobs = response.data.jobs;
 
     return { props: { jobs } };
